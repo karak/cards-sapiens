@@ -1,0 +1,100 @@
+.card {
+    display: inline-block;
+    position: relative;
+    box-sizing: content-box;
+    width: 98px;
+    height: 139px;
+    border: 1px solid;
+    border-radius: 8px;
+    background-color: transparent;
+}
+
+.card .surface {
+    position: relative;
+    width: 98px;
+    height: 139px;
+    border-width: 0;
+    border-radius: 8px;
+    background-color: rgb(208, 208, 208);
+}
+
+.card .surface .main-container {
+    -webkit-writing-mode: vertical-rl; 
+    text-align: left;
+    text-indent: -24px; padding-top: +35px;
+    margin-top: 0; margin-left: auto; margin-right: auto; margin-bottom: 32px;
+}
+
+.card .surface .sub-container {
+    position: absolute; 
+    bottom: 0;
+    width: 98px;
+    height: 32px;
+    border-width: 0;
+    border-top: 1px solid black; 
+    border-radius: 0 0 8px 8px; 
+    padding-top: 2px;
+    background-color: white; 
+    font-family: serif;
+    font-size: 11px;
+    text-align: center;
+}
+
+.card .backface {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 98px;
+    height: 139px;
+    border-width: 0;
+    border-radius: 8px;
+    background-color: rgb(25, 0, 51);
+}
+
+.card {
+    border-color: black;
+}
+
+.card.reversed {
+    border-color: white;
+}
+.card .backface,
+.card.reversed .surface {
+    visibility: hidden;
+}
+
+.card .surface,
+.card.reversed .backface {
+    visibility: visible;
+}
+
+.card.placeholder {
+    box-sizing: content-box;
+    width: 98px;
+    height: 139px;
+    border-width: 1px;
+    border-style: dotted;
+    border-color: gray;
+    background-color: transparent;
+    color: gray;
+}
+
+.card.placeholder .placeholder-text
+{
+    display: block;
+    position: relative;
+    top: 50%;
+    margin-top: -1em;
+    text-align: center;
+}
+
+.mat {
+    display: block;
+    position: relative;
+    background-color: white;
+    border: 0 none;
+}
+
+.unselectable {
+    -webkit-user-select: none;
+}

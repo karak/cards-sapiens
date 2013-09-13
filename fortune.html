@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja-jp">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">  
+<meta charset="utf-8">
+<title></title>
+
+<link rel="stylesheet" href="https://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.css" />
+<script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script src="https://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.js"></script>
+<script src="https://ajax.aspnetcdn.com/ajax/knockout/knockout-2.2.1.js"></script>
+
+<link rel="stylesheet" href="spread.css" />
+<script src="spread.js"></script>
+</head>
+
+<body>
+
+<div data-role="page" id="page-spread-fortune" data-title="運勢">
+    <div data-role="header">
+        <a href="#" data-rel="back" data-icon="back" data-iconpos="notext" title="Go back">Back</a>
+        <h1>運勢（過去・現在・未来）</h1>
+    </div>
+    <div data-role="content" class="unselectable">
+        <div class="mat" style="min-width: 380px; padding: 12px 20px; text-align: center;">
+            <div class="card placeholder" style="margin-right: 20px;">
+                <p class="placeholder-text">Past</p>
+            </div>
+            <div class="card placeholder" style="margin-right: 20px">
+                <p class="placeholder-text">Present</p>
+            </div>
+            <div class="card placeholder" style="">
+                <p class="placeholder-text">Future</p>
+            </div>
+            
+        </div>
+        <div style="position: relative; display: block; text-align: center; margin-top: 180px; height: 360px;">
+            <div class="start-place" style="display: inline-block; width: 100px;"><br></div>
+    
+            <div class="deck" data-bind="foreach: cards" style="display: inline-block">
+                <div data-bind="template: {name: 'template-card', data: $data}" style="position: absolute"></div>
+            </div>
+        </div>
+    </div>
+    <div data-role="popup" id="tooltip-desc-the-fool" class="ui-content" data-theme="c">
+        <p>冒険、無軌道</p>
+        <p><a href="http://ja.wikipedia.org/wiki/%E6%84%9A%E8%80%85" style="font-size: 75%">Wikipedia</a></p>
+    </div>
+</div>
+
+</body>
+</html>

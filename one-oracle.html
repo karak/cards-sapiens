@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja-jp">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">  
+<meta charset="utf-8">
+<title></title>
+
+<link rel="stylesheet" href="https://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.css" />
+<script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script src="https://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.js"></script>
+<script src="https://ajax.aspnetcdn.com/ajax/knockout/knockout-2.2.1.js"></script>
+
+<link rel="stylesheet" href="spread.css" />
+<script src="spread.js"></script>
+</head>
+
+<body>
+
+<div data-role="page" id="page-spread-one-oracle" data-title="ワンオラクル">
+    <div data-role="header">
+        <a href="#" data-rel="back" data-icon="back" data-iconpos="notext" title="Go back">Back</a>
+        <h1>ワンオラクル（一枚引き）</h1>
+    </div>
+
+    <div data-role="content" class="unselectable">
+        <div class="mat" style="min-width: 140px; padding: 12px 20px; text-align: center;">
+            <div class="card placeholder" style="margin-right: 20px;">
+                <p class="placeholder-text"><span style="font-size: 40px">?</span></p>
+            </div>
+        </div>
+        <div style="position: relative; display: block; text-align: center; margin-top: 180px; height: 360px;">
+            <div class="start-place" style="display: inline-block; width: 100px;"><br></div>
+    
+            <div class="deck" data-bind="foreach: cards" style="display: inline-block">
+                <div data-bind="template: {name: 'template-card', data: $data}" style="position: absolute"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
