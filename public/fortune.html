@@ -19,20 +19,22 @@
 <div data-role="page" id="page-spread-fortune" data-title="運勢">
     <div data-role="header">
         <a href="#" data-rel="back" data-icon="back" data-iconpos="notext" title="Go back">Back</a>
-        <h1>運勢（過去・現在・未来）</h1>
+        <h1>運勢（現在・過去・未来）</h1>
     </div>
     <div data-role="content" class="unselectable">
         <div class="mat" style="min-width: 380px; padding: 12px 20px; text-align: center;">
-            <div class="card placeholder" style="margin-right: 20px;">
-                <p class="placeholder-text">Past</p>
+            <div style="position: relative; display: inline-block; width: 380px; height: 141px;">
+                
+                <div class="card placeholder" style="position: absolute; left: 140px;">
+                    <p class="placeholder-text">Present</p>
+                </div>
+                <div class="card placeholder" style="position: absolute; left: 20px;">
+                    <p class="placeholder-text">Past</p>
+                </div>
+                <div class="card placeholder" style="position: absolute; left: 260px;">
+                    <p class="placeholder-text">Future</p>
+                </div>                
             </div>
-            <div class="card placeholder" style="margin-right: 20px">
-                <p class="placeholder-text">Present</p>
-            </div>
-            <div class="card placeholder" style="">
-                <p class="placeholder-text">Future</p>
-            </div>
-            
         </div>
         <div style="position: relative; display: block; text-align: center; margin-top: 180px; height: 360px;">
             <div class="start-place" style="display: inline-block; width: 100px;"><br></div>
