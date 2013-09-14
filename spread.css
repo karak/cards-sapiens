@@ -19,10 +19,17 @@
 }
 
 .card .surface .main-container {
-    -webkit-writing-mode: vertical-rl; 
-    text-align: left;
-    text-indent: -24px; padding-top: +35px;
-    margin-top: 0; margin-left: auto; margin-right: auto; margin-bottom: 32px;
+    writing-mode: tb-rl;
+    -webkit-writing-mode: vertical-rl;
+    -moz-writing-mode: vertical-rl;
+    -o-writing-mode: vertical-rl;
+    -ms-writing-mode: tb-rl;    
+    text-align: center;
+    padding-top: +15px;
+    margin-top: 0;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 32px;
 }
 
 .card .surface .sub-container {
