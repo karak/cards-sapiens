@@ -32,7 +32,18 @@ var supportsCssTransitions = (function () {
     return false;
 } ());
 
-var supportsCssAnimation = true;
+var supportsCssAnimation = (function () {
+    var b = document.body || document.documentElement;
+    var s = b.style;
+    console.log();
+    if (typeof s["webkitAnimation"] == 'string') {
+        return true;
+    } else if (s["Animation"] == 'string') {
+        return true;
+    } else {
+        return false;
+    }
+} ()); //TODO: right logic
 
 (function ($, ko) {
 

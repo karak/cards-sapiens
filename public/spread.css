@@ -126,20 +126,42 @@
 
 /**** css animations ****/
 .revolution-container {
+    transform-origin center center;
     -webkit-transform-origin center center;
+    -moz-transform-origin center center;
+    -o-transform-origin center center;
+    -ms-transform-origin center center;
 }
 
 .revolution-container.animating {
     -webkit-animation-name: revolution;
     -webkit-animation-duration: 2000ms;
     -webkit-animation-iteration-count: infinite;
-    -webkit-animation-delay: 0;
     -webkit-animation-timing-function: linear;
     -webkit-animation-play-state: running;
+    
+    -moz-animation-name: revolution;
+    -moz-animation-duration: 2000ms;
+    -moz-animation-iteration-count: infinite;
+    -moz-animation-timing-function: linear;
+    -moz-animation-play-state: running;
 }
 
 .revolution-container.animating.paused {
     -webkit-animation-play-state: paused;
+    
+    -moz-animation-play-state: paused;
+}
+
+
+@keyframes revolution {
+        0% {
+            transform: rotate(0);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+
 }
 
 @-webkit-keyframes revolution {
@@ -153,22 +175,21 @@
 
 .card.flipping-before
 {
+    animation-name: card-flipping-before;
     -webkit-animation-name: card-flipping-before;
-    -webkit-animation-delay: 0;
 }
 
 .card.flipping-after
 {
+    animation-name: card-flipping-after;
     -webkit-animation-name: card-flipping-after;
 }
 
 .card.flipping-before,
 .card.flipping-after
 {
+    animation-duration: 150ms;
     -webkit-animation-duration: 150ms;
-    -webkit-animation-iteration-count: 1;
-    -webkit-animation-timing-function: swing;
-    -webkit-animation-play-state: running;
 }
 
 @-webkit-keyframes card-flipping-before {
@@ -180,11 +201,29 @@
         }
 }
 
+@keyframes card-flipping-before {
+        0% {
+            transform: translateY(0) rotateY(0deg);
+        }
+        100% {
+            transform: translateY(-18px) rotateY(-90deg);
+        }
+}
+
 @-webkit-keyframes card-flipping-after {
         0% {
             -webkit-transform: translateY(-18px) rotateY(90deg);
         }
         100% {
             -webkit-transform: translateY(0) rotateY(0deg);
+        }
+}
+
+@keyframes card-flipping-after {
+        0% {
+            transform: translateY(-18px) rotateY(90deg);
+        }
+        100% {
+            transform: translateY(0) rotateY(0deg);
         }
 }
