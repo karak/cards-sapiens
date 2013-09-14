@@ -1,3 +1,4 @@
+/******** library extension ********/
 Array.prototype.shuffle = function() {
     var i = this.length;
     while(i){
@@ -31,8 +32,11 @@ var supportsCssTransitions = (function () {
     return false;
 } ());
 
+var supportsCssAnimation = true;
+
 (function ($, ko) {
-    
+
+/******** resources ********/
 var cardData =  [{
     nameEn: "The Fool",
     nameJa: "愚者",
@@ -141,13 +145,6 @@ var relativeOffset = function (from,  to) {
     return delta;
 };
 
-/*
-1. テンプレートのロード
-2. ko binding によるDOM書き換え
-3. ページ初期化
-という順序にしたい。
-そのため、基本自動初期化は無効にする。
-*/
 var reqTemplateLoad = $.get('template-card.html', function(html) {
     $('body').append('<div style="display:none">' + html + '</div>');
 });
@@ -159,12 +156,8 @@ $(document).on('pageinit', function (e) {
 
 $.when(reqTemplateLoad).then(function () {
 setTimeout(function () {
-	
     // Step 0.
     var radius = 180;
-    var leftCancel = -radius / 2;
-
-    var initialAnimationController;
     
 	var $root =$(e.target);
 
@@ -181,181 +174,176 @@ setTimeout(function () {
     ko.applyBindings({
         cards: cardViewModels
     });
-/*
-}); //setTimeout
-}); //when-then
-
-}); //pageinit
-
-$(document).on('pageshow', function (e) {
-
-$.when(reqTemplateLoad).then(function () {
-setTimeout(function () {
-*/
+    
     // reverse
-    ko.utils.arrayForEach(cardViewModels(), function (item) { item.reversed(true); }); //TODO: effect 'flip'
+    ko.utils.arrayForEach(cardViewModels(), function (item) { item.reversed(true); });
     
     // shuffle once
     // TODO: provide reshuffle button
     cardViewModels.shuffle();
     
-	(function () {
-        //revoluting cards...
-        var $origin = $root.find('.start-place'),
-            $deckCards= $root.find('.deck .card');
-
-        var queue;
+    var revolution = (new function () {
+        var $deckCards= $root.find('.deck .card'),
+            $container = $root.find('.revolution-container');
+            n = $deckCards.length;
         
-        var lastNow;
-        var revoluteRec = function () {
-            queue = $({deg: 0}).animate({deg: 360}, {
-                duration: 2000,
-                easing: 'linear',
-                step: function (now) {
-                    var n = $deckCards.length,
-                        d = 360.0 / n;
-                    $deckCards.each(function (i, card) {
-                        var angle = now + d * i;
-                        $(card).
-                            css({
-                                transform: 'rotate(' + angle + 'deg)' + ' translateX(' + radius + 'px)' 
-                            });
-                        lastNow = now;
-                    });
-                },
-                complete: function () {
-                    //continue infinitely...
-                    revoluteRec();
-                }
+        this.start = function () {
+            //revoluting cards
+            //ATTENTION: sync with value in stylesheet
+            //           animation setting has done via css animations
+            
+            //initialize position
+            $deckCards.each(function (i, item) {
+                var $item = $(item);
+                $item.css({
+                            'position': 'absolute',
+                            'top': 0 + 'px',
+                            'left': '0',
+                            'transform-origin': 'center center',
+                            'transform': 'rotate(' + (90 + 360 * i / n) +'deg) translateX(' + radius + 'px)'
+                });
             });
+            
+            $container.addClass('animating');
         };
-        
-        //initialize origin
-        $deckCards.each(function (i, item) {
-            var delta = relativeOffset(item, $origin);
-            $(item).css({
-                left: leftCancel + 'px',
-                'transform-origin': 'center center'
-            });
-        });
-
-        
-        initialAnimationController = {
-            resetPosition: function (callback) {
-                queue.stop();
-                $({t: 1}).animate({t: 0}, {
-                    duration: 120,
+                      
+        this.stop = function () {
+            $container.
+                addClass('paused');
+                //TODO: set keyframe 0% ... how?
+                
+            var deferred = $({t: 1}).animate({t: 0},
+                {
+                    duration: 200,
                     step: function (t) {
-                        var n = $deckCards.length,
-                            d = 360.0 / n;
-                        $deckCards.each(function (i, card) {
-                            var myLastAngle = (lastNow + d * i);;
-                            var angle = myLastAngle * t;
-                            $(card).
-                                css({
-                                    transform: 'rotate(' + angle + 'deg)' + ' translateX(' + radius * t + 'px)' 
-                                });
+                        $deckCards.each(function (i, item) {
+                            var $item = $(item);
+                            $item.css({
+                                'transform': 'rotate(' + (360 * i / n) * t +'deg) translateX(' + radius * t+ 'px)'
+                            });
                         });
                     },
                     complete: function () {
-                        callback();
+                        $deckCards.css('transform', 'none');
+                        $container.removeClass('animating');
                     }
-                });
-            } //resetPosition
+                }
+            );
+            return deferred;
         };
-        
-        //start
-        revoluteRec();
     } ());
-	
-    var emptyFn = function () {};
-    var goToNext = function () {
-        // Step 1.
-        initialAnimationController.resetPosition(function () {
-        
-            var reqDistributes, posedCards;
-            
-            // -- distribute
-            // TODO: wait clicked -> Do it just after the card is opened!
-            (function () {
-                var $deckCards, $placeholders;
-                
-                reqDistributes = [];
-                
-                $deckCards= $root.find('.deck .card');
     
-                $placeholders = $root.find('.mat .card.placeholder').each(function (i, placeholder) {
-                    var $card = $($deckCards.get($deckCards.length - 1 - i)),
-                        delta = relativeOffset($card, placeholder),
-                        queue;
-                    
-                    posedCards = new Array();
-                    queue = $card.
-                        delay(150 * i).
-                        animate({top: delta.top + 'px', left: delta.left + leftCancel + 'px'}, 180, 'swing', function () {
-                            posedCards.push(this);
-                        });
-                    reqDistributes.push(queue);
-                });
-            } ());
+    var emptyFn = function () {};
+    
+    //click handler
+    var goToNext = emptyFn;
+    
+    // Step 0.
+    var step0 = function () {
+        //stop and go to step1 instantly
+        var reqStop = revolution.stop();
+        $.when(reqStop).then(step1);
+        goToNext = emptyFn;
+    }; //step0
+    
+    // Step 1.
+    var step1 = function () {
+        var reqDistributes, posedCards;
+       
+        // -- distribute
+        // TODO: wait clicked -> Do it just after the card is opened!
+        (function () {
+            var $deckCards, $placeholders;
             
-            goToNext = function () {
-                $.when(reqDistributes).then(function () {
-                    // Step 2... 2 + N
-                    var showOneCard = (function () {
-                        var index = 0;
-                        
-                        return function () {
-                            if (index < posedCards.length)
+            reqDistributes = [];
+            
+            $deckCards= $root.find('.deck .card');
+
+            $placeholders = $root.find('.mat .card.placeholder').each(function (i, placeholder) {
+                var $card = $($deckCards.get($deckCards.length - 1 - i)),
+                    delta = relativeOffset($card, placeholder),
+                    queue;
+                
+                posedCards = new Array();
+                queue = $card.
+                    delay(150 * i).
+                    animate({top: '+=' + delta.top + 'px', left: '+=' + delta.left + 'px'}, 180, 'swing', function () {
+                        posedCards.push(this); //TODO: pass by jQuery.Deferred
+                    });
+                reqDistributes.push(queue);
+            });
+        } ());
+        
+        goToNext = function () {
+            $.when(reqDistributes).then(function () {
+                // Step 2... 2 + N
+                var showOneCard = (function () {
+                    var index = 0;
+                    
+                    return function () {
+                        if (index < posedCards.length)
+                        {
+                            var $card = $(posedCards[index]),
+                                duration = 150;  //ATTENTION: sync with value in stylesheet
+                            
+                            //effect 'flip' with pop
+                            if (supportsCssTransitions)
                             {
-                                var $card = $(posedCards[index]),
-                                    width = $card.width(),
-                                    duration1 = 50,
-                                    duration2 = 50;
-                                
-                                //effect 'flip' with pop
-                                if (supportsCssTransitions)
-                                {
-                                    $card.
-                                        animate({'top': '-=18px', transform: "scaleX(" + 100 + "%)"}, duration1, 'swing', function () {
+                                $card.
+                                    queue(function () {
+                                        $card.addClass('flipping-before'); //=> invoke css animation
+                                        setTimeout(function () {
                                             $card.removeClass('reversed'); //TODO: update ViewModel.reversed
-                                        }).
-                                        animate({'top': '+=18px', transform: "scaleX(" + 0 + "%)"}, duration2, 'swing', function () {
-                                        });
-                                }
-                                else
-                                {
-                                    $card.
-                                        animate({'top': '-=18px', width: '0', left: '+=' + width / 2 + 'px'}, duration1, 'swing', function () {
-                                            $card.removeClass('reversed');
-                                        }).
-                                        animate({'top': '+=18px', width: width + 'px', left: '-=' + width / 2 + 'px'}, duration2, 'swing', function () {
-                                        });
-                                }
-                                ++index;
+                                            $card.addClass('flipping-after'); //=> invoke css animation
+                                            $card.delay(duration/ 2);
+                                            //TODO: deferred.promise() 
+                                        }, duration / 2);
+                                    });
+                                //TODO: return deffered;
                             }
                             else
                             {
-                                // Final step
-                                goToNext = emptyFn;
+                                var width = $card.width(),
+                                    pos = $card.position();
+                                    
+                                //It did not work "-=/+=" notation.  BUG in jQuery?
+                                $card.
+                                    animate({top: (pos.top - 18) + 'px', left: (pos.left + width / 2) + 'px', width: '0px'}, duration / 2, function () {
+                                        $card.removeClass('reversed');
+                                    }).
+                                    animate({top: pos.top + 'px', left: pos.left + 'px', width: width + 'px'}, duration / 2, 'swing');
+                                //TODO: return deffered;
                             }
-                        };
-                    } ());
-                    
-                    //initial
-                    showOneCard();
-                    
-                    //wait next
-                    goToNext = showOneCard;
-                });
-            };
-        }); //resetPosition
-    }; //goToNext #1
+                            ++index;
+                        }
+                        else
+                        {
+                            // Final step
+                            goToNext = emptyFn;
+                        }
+                    };
+                } ());
+                
+                //initial
+                showOneCard();
+                
+                //wait next
+                goToNext = showOneCard;
+            });
+        };
+    }; //step1
     
+    //set initial handler
+    goToNext = step0;
+    
+    //step by clicked/tapped
     $(document).on('vclick', function () {
         goToNext.call();
     });
 
+    //start animation
+    revolution.start();
+    
 }); //setTimeout
 }); //when-then
 

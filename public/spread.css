@@ -7,6 +7,8 @@
     border: 1px solid;
     border-radius: 8px;
     background-color: transparent;
+    
+    overflow-x: hidden; /*for flip animation*/
 }
 
 .card .surface {
@@ -102,6 +104,87 @@
     border: 0 none;
 }
 
+.revolution-container
+{
+    position: relative;
+    top: 0;
+    left: 0;
+    display: inline-block;
+    width:0; height:0;
+    /*
+    border: 2px solid red;
+    border-radius: 2px;
+    */
+    margin: 0;
+    padding: 0;
+}
+
 .unselectable {
     -webkit-user-select: none;
+}
+
+
+/**** css animations ****/
+.revolution-container {
+    -webkit-transform-origin center center;
+}
+
+.revolution-container.animating {
+    -webkit-animation-name: revolution;
+    -webkit-animation-duration: 2000ms;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-delay: 0;
+    -webkit-animation-timing-function: linear;
+    -webkit-animation-play-state: running;
+}
+
+.revolution-container.animating.paused {
+    -webkit-animation-play-state: paused;
+}
+
+@-webkit-keyframes revolution {
+        0% {
+            -webkit-transform: rotate(0);
+        }
+        100% {
+            -webkit-transform: rotate(360deg);
+        }
+}
+
+.card.flipping-before
+{
+    -webkit-animation-name: card-flipping-before;
+    -webkit-animation-delay: 0;
+}
+
+.card.flipping-after
+{
+    -webkit-animation-name: card-flipping-after;
+}
+
+.card.flipping-before,
+.card.flipping-after
+{
+    -webkit-animation-duration: 150ms;
+    -webkit-animation-iteration-count: 1;
+    -webkit-animation-timing-function: swing;
+    -webkit-animation-play-state: running;
+}
+
+@-webkit-keyframes card-flipping-before {
+        0% {
+            -webkit-transform: translateY(0) rotateY(0deg);
+        }
+        100% {
+            -webkit-transform: translateY(-18px) rotateY(-90deg);
+        }
+}
+
+@-webkit-keyframes card-flipping-after {
+        0% {
+            -webkit-transform: translateY(-18px) rotateY(90deg);
+        }
+        100% {
+            -webkit-transform: translateY(0) rotateY(0deg);
+        }
 }
