@@ -245,6 +245,13 @@ var MainViewModel = function (deviceViewMode, spread) {
     this.revolutionOn = revolutionOn;
 };
 
+VStackUtil = function () {};
+VStackUtil.margin = 10;
+VStackUtil.height = 141;
+VStackUtil.topOf = function (index) {
+    return (this.margin + this.height) * index;
+}
+
 MainViewModel.prototype.distribute = function (deltaOffset) {
     var self = this,
         placeholders = this.placeholders(),
@@ -276,9 +283,8 @@ MainViewModel.prototype.distribute = function (deltaOffset) {
                 {
                     /* ATTENTION: sync with css */
                     var margin = 10,
-                        w = 100,
                         h = 141;
-                    card.top(i * (margin + h) + deltaOffset.top);
+                    card.top(VStackUtil.topOf(i) + deltaOffset.top);
                     card.left(0 + deltaOffset.left);
                 }
                 setTimeout(function () {
@@ -289,26 +295,45 @@ MainViewModel.prototype.distribute = function (deltaOffset) {
         }
         else
         {
-            var top0 = card.top(), left0 = card.left();
-            $({t: 0}).
-                delay(150 * i).
-                animate({t: 1}, {
-                duration: duration,
-                easing: 'linear',
-                step: function (t){
-                    card.top(top0 * (1 - t) + (deltaOffset.top + placeholder.top) * t);
-                    card.left(left0  * (1 - t) + (deltaOffset.left + placeholder.left) * t);
-                },
-                complete: function () {
-                    deferred.resolve(card);
-                }
-            });
+            if (!self.shrinkMat()) {
+                card.top(deltaOffset.top + (placeholder.top || 0));
+                card.left(deltaOffset.left + (placeholder.left || 0));
+                //TODO: animation
+            }
+            else
+            {
+                var top0 = card.top(), left0 = card.left();
+                $({t: 0}).
+                    delay(150 * i).
+                    animate({t: 1}, {
+                    duration: duration,
+                    easing: 'linear',
+                    step: function (t){
+                        card.top(top0 * (1 - t) + (deltaOffset.top + (placeholder.top || 0)) * t);
+                        card.left(left0  * (1 - t) + (deltaOffset.left + (placeholder.left || 0)) * t);
+                    },
+                    complete: function () {
+                        deferred.resolve(card);
+                    }
+                });
+            }
         }
         reqDistributes[i] = deferred.promise();
         //console.log("    => " + card.nameJa);
     });
     
     return reqDistributes;
+};
+
+MainViewModel.prototype.focus = function (parentElement, index, cardViewModel) {
+    var self = this;
+
+    if (!self.shrinkMat()) {
+        
+    } else {
+        var offsetY = VStackUtil.topOf(index) + 40;
+        $(window).scrollTop($(parentElement).position().top + offsetY);
+    }
 };
 
 MainViewModel.prototype.restart = function () {
@@ -449,11 +474,13 @@ $(document).on('pageinit', function (e) {
             };
         } ());
         
-        var CardRevelealer = function (reqDistributes) {
+        var CardRevelealer = function (reqDistributes, stepFn) {
             var index = 0,
                 deferred = $.Deferred(),
                 n = reqDistributes.length,
                 cards = new Array(n);
+                
+            stepFn = stepFn || emptyFn;
                 
             this.showEachCard = function () {
                 if (index < n)
@@ -466,6 +493,7 @@ $(document).on('pageinit', function (e) {
                         //TODO: implement like catalog viewer
                         cardViewModel.flipFromReversed();
                         cards[index] = cardViewModel;
+                        stepFn.apply(this, [index, cardViewModel]);
                         ++index;
                     }); //when-then
                 }
@@ -505,7 +533,11 @@ $(document).on('pageinit', function (e) {
             goToNext = function () {
             
                 // Step 2... 2 + N
-                var cardRevlealer = new CardRevelealer(reqDistributes);
+                var cardRevlealer = new CardRevelealer(reqDistributes, function (index, card) {
+                    mainViewModel.focus(
+                        $root.find('.mat>div'),
+                        index, card);
+                });
                 
                 //initial
                 var allShown = cardRevlealer.showEachCard();                
