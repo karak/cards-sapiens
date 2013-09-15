@@ -59,87 +59,87 @@ var cardData =  [{
 }, {
     nameEn: "The Magician",
     nameJa: "魔術師",
-    descId: ''
+    descId: 'tooltip-desc-the-magician'
 }, {
     nameEn: "The High Priestess",
     nameJa: "女教皇",
-    descId: ''
+    descId: 'tooltip-desc-the-high-priestess'
 }, {
     nameEn: "The Empress",
     nameJa: "女帝",
-    descId: ''
+    descId: 'tooltip-desc-the-empress'
 }, {
     nameEn: "The Emperor",
     nameJa: "皇帝",
-    descId: ''
+    descId: 'tooltip-desc-the-emperor'
 }, {
     nameEn: "The Hierophant",
     nameJa: "教皇",
-    descId: ''
+    descId: 'tooltip-desc-the-hierophant'
 }, {
     nameEn: "The Lovers",
     nameJa: "恋人達",
-    descId: ''
+    descId: 'tooltip-desc-the-lovers'
 }, {
     nameEn: "The Chariot",
     nameJa: "戦車",
-    descId: ''
+    descId: 'tooltip-desc-the-chariot'
 }, {
     nameEn: "Justice",
     nameJa: "正義",
-    descId: ''
+    descId: 'tooltip-desc-justice'
 }, {
     nameEn: "The Hermit",
     nameJa: "隠者",
-    descId: ''
+    descId: 'tooltip-desc-the-hermit'
 }, {
     nameEn: "The Wheel of Fortune",
     nameJa: "運命の輪",
-    descId: ''
+    descId: 'tooltip-desc-the-wheel-of-fortune'
 }, {
     nameEn: "Strength",
     nameJa: "力",
-    descId: ''
+    descId: 'tooltip-desc-strength'
 }, {
     nameEn: "The Hanged Man",
     nameJa: "吊された男",
-    descId: ''
+    descId: 'tooltip-desc-the-hanged-man'
 }, {
     nameEn: "Death",
     nameJa: "死神",
-    descId: ''
+    descId: 'tooltip-desc-death'
 }, {
     nameEn: "Temperance",
     nameJa: "節制",
-    descId: ''
+    descId: 'tooltip-desc-temperance'
 }, {
     nameEn: "The Devil",
     nameJa: "悪魔",
-    descId: ''
+    descId: 'tooltip-desc-devil'
 }, {
     nameEn: "The Tower",
     nameJa: "塔",
-    descId: ''
+    descId: 'tooltip-desc-the-tower'
 }, {
     nameEn: "The Star",
     nameJa: "星",
-    descId: ''
+    descId: 'tooltip-desc-the-start'
 }, {
     nameEn: "The Moon",
     nameJa: "月",
-    descId: ''
+    descId: 'tooltip-desc-moon'
 }, {
     nameEn: "The Sun",
     nameJa: "太陽",
-    descId: ''
+    descId: 'tooltip-desc-the-sun'
 }, {
     nameEn: "Judgement",
     nameJa: "審判",
-    descId: ''
+    descId: 'tooltip-desc-judgement'
 }, {
     nameEn: "The World",
     nameJa: "世界",
-    descId: ''
+    descId: 'tooltip-desc-the-world'
 }];
 
 
@@ -151,6 +151,7 @@ var CardViewModel = function (data) {
     this.flipping = ko.observable(data.flipping || '');
     this.left = ko.observable(data.left || 0);
     this.top = ko.observable(data.top || 0);
+    this.descId = data.descId || '';
 };
 
 CardViewModel.prototype.reverse = function () {
@@ -367,7 +368,13 @@ $(document).on('pageinit', function (e) {
         
         $root.find('.requires-jquery-mobile-pageinit').
             find('button, a[data-role="button"]').
-            button();
+            button().
+            end().
+            find('*[data-role="popup"]').
+            init().popup().
+            end().
+            find('a[href]').
+            init();
         
     //wait updating DOM especially on 2nd pageinit.
     //setTimeout(function () {

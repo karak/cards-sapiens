@@ -3,7 +3,7 @@
 <body>
 
 <script type="text/html" id="template-card">
-    <a href="#" data-rel="popup" data-transition="pop" style="color: inherit; text-decoration: none;">
+    <a data-rel="popup" data-transition="pop" style="color: inherit; text-decoration: none;" data-bind="attr: {href: '#' + descId}">
     <div class="card"
         data-bind="
         visible: !($root.hasDone() && reversed()),
@@ -47,7 +47,7 @@
             </div>
         </div>
     </div>
-        
+    
     <div style="position: relative; display: block; text-align: center; min-height: 70.5px; margin-bottom: 40px;"
          data-bind="
             style: {
@@ -64,18 +64,22 @@
     </div>
             
     <div data-role="panel" class="requires-jquery-mobile-pageinit" data-bind="visible: hasDone" style="margin-top: -70.5px">
-        <button data-bind="{click: restart}">やりなおす</button>
+        <button data-bind="{click: restart}" data-theme="c">やりなおす</button>
         <a data-role="button" href="index.html" data-transition="slide" data-icon="arrow-r" data-iconpos="right" data-iconshadow="true">別のスプレッドを選ぶ</a>
     </div>
+    
+    <div data-bind="template: {name: 'template-description-about-cards', data: {}}" class="requires-jquery-mobile-pageinit"></div>
 </script>
 
 <script type="text/html" id="template-description-about-cards">
-    <!--
     <div data-role="popup" id="tooltip-desc-the-fool" class="ui-content" data-theme="c">
         <p>冒険、無軌道</p>
-        <p><a href="http://ja.wikipedia.org/wiki/%E6%84%9A%E8%80%85" style="font-size: 75%">Wikipedia</a></p>
+        <p data-wikipedia="embedded"><a href="http://ja.wikipedia.org/wiki/%E6%84%9A%E8%80%85" style="font-size: 75%">Wikipedia</a></p>
     </div>
-    -->
+    <div data-role="popup" id="tooltip-desc-the-magician" class="ui-content" data-theme="c">
+        <p>始まり、技術、好奇心</p>
+    </div>
+    
 </script>
 </body>
 </html>
