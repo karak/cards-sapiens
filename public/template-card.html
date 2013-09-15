@@ -4,7 +4,18 @@
 
 <script type="text/html" id="template-card">
     <a href="#" data-rel="popup" data-transition="pop" style="color: inherit; text-decoration: none;">
-    <div class="card" data-bind="css: {reversed: reversed}" style="left:0; top:0;">
+    <div class="card"
+        data-bind="css: {
+            'reversed': reversed,
+            'transitting-position': distributing(), 
+            'flipping-before': flipping() == 'before',
+            'flipping-after': flipping() == 'after'
+        },
+        style: {
+            'position': 'absolute',
+            'left': left() + 'px',
+            'top': top() + 'px'
+        }">
         <div class="surface">
             <div class="main-container" style="">
                 <span data-bind="text: nameJa" style="font-weight: bolder; font-family: serif;
@@ -20,28 +31,40 @@
 </script>
 
 <script type="text/html" id="template-spread">
-    <div class="mat" data-bind="css: {'vertical-stack': shrinkMat}"><!-- min-height: (content-height) + both padding -->
+    <div class="mat" data-bind="css: {'vertical-stack': shrinkMat}">
         <div style="position: relative; margin-left: auto; margin-right: auto; min-width: 100px;" data-bind="style: {width: matWidth() + 'px', minHeight: matHeight() + 'px'}, foreach: placeholders">
-            <div class="card placeholder" data-bind="style: {
-                left: left + 'px',
-                top: top + 'px', 
-                'transform': 'rotateZ(' + ('rotateZ' in $data? rotateZ : 0) + 'deg)',
-                '-webkit-transform': 'rotateZ(' + ('rotateZ' in $data? rotateZ : 0) + 'deg)'
-                }
-            ">
+            <div class="card placeholder"
+                data-bind="style: {
+                    left: left + 'px',
+                    top: top + 'px', 
+                    'transform': 'rotateZ(' + ('rotateZ' in $data? rotateZ : 0) + 'deg)',
+                    '-webkit-transform': 'rotateZ(' + ('rotateZ' in $data? rotateZ : 0) + 'deg)'
+                }"
+            >
                 <p class="placeholder-text" data-bind="text: text"></p>
             </div>
         </div>
     </div>
-    
-    <div style="position: relative; display: block; text-align: center;"
-         data-bind="style: { marginTop: (revolutionRadius() + 70.5) + 'px', height: (revolutionRadius() * 2) + 'px' }"><!-- margin-top: wanted-value + h/2 -->
+        
+    <div style="position: relative; display: block; text-align: center; min-height: 70.5px"
+         data-bind="
+            style: {
+                marginTop: (revolutionRadius() + 70.5) + 'px',
+                height: (revolutionRadius() * 2) + 'px',
+                overflowY: 'visible'
+            }"><!-- margin-top: wanted-value + h/2 -->
         <div class="revolution-container" data-bind="css: {animating: revolutionAnimating}">
             <div class="deck" data-bind="foreach: cards" style="position:absolute; left: -50px; top: -70.5px;"><!-- w/2, h/2 -->
                 <div data-bind="template: {name: 'template-card', data: $data}" style="position: absolute"></div>
             </div>
         </div>
     </div>
+            
+    <div class="requires-jquery-mobile-pageinit" data-bind="visible: hasDone, style: {marginTop: (-190 - revolutionRadius() * 2) + 'px'}">
+        <button data-bind="{click: restart}">やりなおす</button>
+        <a data-role="button" href="index.html" data-transition="slide">別のスプレッドを選ぶ</a>
+    </div>
+
 </script>
 
 <script type="text/html" id="template-description-about-cards">

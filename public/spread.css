@@ -138,6 +138,14 @@
     -webkit-user-select: none;
 }
 
+/**** css transitions ****/
+.card.transitting-position {
+    transition: left 150ms linear, top 150ms linear;
+    -webkit-transition: left 150ms linear, top 150ms linear;
+    -moz-transition: left 150ms linear, top 150ms linear;
+    -o-transition: left 150ms linear, top 150ms linear;
+    -ms-transition: left 150ms linear, top 150ms linear;
+}
 
 /**** css animations ****/
 .revolution-container {
