@@ -22,7 +22,13 @@
 <script type="text/html" id="template-spread">
     <div class="mat" data-bind="css: {'vertical-stack': shrinkMat}"><!-- min-height: (content-height) + both padding -->
         <div style="position: relative; margin-left: auto; margin-right: auto; min-width: 100px;" data-bind="style: {width: matWidth() + 'px', minHeight: matHeight() + 'px'}, foreach: placeholders">
-            <div class="card placeholder" data-bind="style: {left: left + 'px', top: top + 'px'}">
+            <div class="card placeholder" data-bind="style: {
+                left: left + 'px',
+                top: top + 'px', 
+                'transform': 'rotateZ(' + ('rotateZ' in $data? rotateZ : 0) + 'deg)',
+                '-webkit-transform': 'rotateZ(' + ('rotateZ' in $data? rotateZ : 0) + 'deg)'
+                }
+            ">
                 <p class="placeholder-text" data-bind="text: text"></p>
             </div>
         </div>

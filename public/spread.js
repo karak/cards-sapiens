@@ -264,8 +264,9 @@ $.when(reqTemplateLoad).then(function () {
                 var $item = $(item);
                 $item.css({
                             'position': 'absolute',
-                            'top': 0 + 'px',
+                            'top': '0',
                             'left': '0',
+                            'zIndex': 10 + n - i,
                             'transform-origin': 'center center',
                             'transform': 'rotate(' + (90 + 360 * i / n) +'deg) translateX(' + mainViewModel.revolutionRadius() + 'px)'
                 });

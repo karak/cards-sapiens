@@ -12,21 +12,23 @@
 <script src="spread.js"></script>
 </head>
 <body>
-<div data-role="page" id="page-spread-fortune" data-title="運勢">
+<div data-role="page" id="page-spread-fortune" data-title="心情">
     <script type="text/javascript">
     config.spread({
-        width: 380,
-        height: 141,
+        width: 100 * 3 + 20 * 2,
+        height: 141 * 3 + 20 * 2,
         placeholders: [
-            {left: 20, text: '過去'},
-            {left: 140, text: '現在'},
-            {left: 260, text: '未来'} 
+            {left:  0, top: 141 + 20, text: '過去'},
+            {left: 120, top: 141 + 20, text: '現在'},
+            {left: 240, top: 141 + 20, text: '未来'}, 
+            {left: 120, top: 0, text: '意識'},
+            {left: 120, top: (141 + 20) *2, text: '潜在意識'}
         ]
     });
     </script>
     <div data-role="header">
         <a href="#" data-rel="back" data-icon="back" data-iconpos="notext" title="Go back">Back</a>
-        <h1>運勢（過去・現在・未来）</h1>
+        <h1>心情（過去・現在・未来・意識・潜在意識）</h1>
     </div>
     <div data-role="content" class="unselectable">
         <div data-bind="template: {name: 'template-spread', data: $data}"></div>

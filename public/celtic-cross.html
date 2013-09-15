@@ -12,21 +12,28 @@
 <script src="spread.js"></script>
 </head>
 <body>
-<div data-role="page" id="page-spread-fortune" data-title="運勢">
+<div data-role="page" id="page-spread-fortune" data-title="ケルト十字">
     <script type="text/javascript">
     config.spread({
-        width: 380,
-        height: 141,
+        width: 390 + 120 + 100,
+        height: 141 * 4 + 30 * 3,
         placeholders: [
-            {left: 20, text: '過去'},
-            {left: 140, text: '現在'},
-            {left: 260, text: '未来'} 
+            {left: 130, top: 141 + 30 + (70.5 + 15), text: '1'},
+            {left: 130, top: 141 + 30 + (70.5 + 15), rotateZ: 90, text: '2'},
+            {left: 130, top: 0 + (70.5 + 15), text: '3'},
+            {left: 130, top: (141 + 30) *2 + (70.5 + 15), text: '4'},
+            {left:  0, top: 141 + 30 + (70.5 + 15), text: '5'},
+            {left: 260, top: 141 + 30 + (70.5 + 15), text: '6'}, 
+            {left: 390 + 120, top: (141 + 30) * 3, text: '7'},
+            {left: 390 + 120, top: (141 + 30) * 2, text: '8'},
+            {left: 390 + 120, top: 141 + 30, text: '9'},
+            {left: 390 + 120, top: 0, text: '10'},
         ]
     });
     </script>
     <div data-role="header">
         <a href="#" data-rel="back" data-icon="back" data-iconpos="notext" title="Go back">Back</a>
-        <h1>運勢（過去・現在・未来）</h1>
+        <h1>ケルト十字</h1>
     </div>
     <div data-role="content" class="unselectable">
         <div data-bind="template: {name: 'template-spread', data: $data}"></div>
