@@ -14,23 +14,24 @@
 <body>
 
 <div data-role="page" id="page-spread-one-oracle" data-title="ワンオラクル">
+    <script type="text/javascript">
+    config.spread({
+        width: 140,
+        height: 141,
+        placeholders: [
+            {left: 0, text: '?'} 
+        ]
+    });
+    </script>
+
     <div data-role="header">
         <a href="#" data-rel="back" data-icon="back" data-iconpos="notext" title="Go back">Back</a>
         <h1>ワンオラクル（一枚引き）</h1>
     </div>
-
     <div data-role="content" class="unselectable">
-        <div class="mat" style="min-width: 140px; padding: 12px 20px; text-align: center;">
-            <div class="card placeholder" style="margin-right: 20px;">
-                <p class="placeholder-text"><span style="font-size: 40px">?</span></p>
-            </div>
-        </div>
-        <div style="position: relative; display: block; text-align: center; margin-top: 250.5px; height: 360px;"><!-- margin-top: wanted-value + h/2 -->
-            <div class="revolution-container" >
-                <div class="deck" data-bind="foreach: cards" style="position:absolute; left: -50px; top: -70.5px;"><!-- w/2, h/2 -->
-                    <div data-bind="template: {name: 'template-card', data: $data}" style="position: absolute"></div>
-                </div>
-            </div>
+        <div data-bind="template: {name: 'template-spread', data: $data}"></div>
+        <div data-bind="visible: hasDone" style="">
+            <a data-role="button" href="index.html" data-transition="slide" data-direction="reverse">一覧に戻る</a>
         </div>
     </div>
 </div>

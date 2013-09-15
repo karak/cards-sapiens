@@ -18,5 +18,33 @@
         <div class="backface"></div>
     </div></a>
 </script>
+
+<script type="text/html" id="template-spread">
+    <div class="mat" data-bind="css: {'vertical-stack': shrinkMat}"><!-- min-height: (content-height) + both padding -->
+        <div style="position: relative; margin-left: auto; margin-right: auto; min-width: 100px;" data-bind="style: {width: matWidth() + 'px', minHeight: matHeight() + 'px'}, foreach: placeholders">
+            <div class="card placeholder" data-bind="style: {left: left + 'px', top: top + 'px'}">
+                <p class="placeholder-text" data-bind="text: text"></p>
+            </div>
+        </div>
+    </div>
+    
+    <div style="position: relative; display: block; text-align: center;"
+         data-bind="style: { marginTop: (revolutionRadius() + 70.5) + 'px', height: (revolutionRadius() * 2) + 'px' }"><!-- margin-top: wanted-value + h/2 -->
+        <div class="revolution-container" data-bind="css: {animating: revolutionAnimating}">
+            <div class="deck" data-bind="foreach: cards" style="position:absolute; left: -50px; top: -70.5px;"><!-- w/2, h/2 -->
+                <div data-bind="template: {name: 'template-card', data: $data}" style="position: absolute"></div>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script type="text/html" id="template-description-about-cards">
+    <!--
+    <div data-role="popup" id="tooltip-desc-the-fool" class="ui-content" data-theme="c">
+        <p>冒険、無軌道</p>
+        <p><a href="http://ja.wikipedia.org/wiki/%E6%84%9A%E8%80%85" style="font-size: 75%">Wikipedia</a></p>
+    </div>
+    -->
+</script>
 </body>
 </html>

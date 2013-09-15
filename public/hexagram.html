@@ -15,46 +15,31 @@
 <body>
 
 <div data-role="page" id="page-spread-one-oracle" data-title="ヘキサグラム">
+    <script type="text/javascript">
+    config.spread({
+        width: 156 * 2 + 100,
+        height: 180 * 2 + 141,
+        placeholders: [
+            {left: 0 + 156, top: -180 + 180, text: '1'},
+            {left: 156 + 156, top: 90 + 180, text: '2'},
+            {left: -156 + 156, top: 90 + 180, text: '3'},
+            {left: 0 + 156, top: 180 + 180, text: '4'},
+            {left: -156 + 156, top: -90 + 180, text: '5'},
+            {left: 156 + 156, top: -90 + 180, text: '6'},
+            {left: 0 + 156, top: 0 + 180, text: '7'},
+        ]
+    });
+    </script>
     <div data-role="header">
         <a href="#" data-rel="back" data-icon="back" data-iconpos="notext" title="Go back">Back</a>
         <h1>ヘキサグラム（六芒星＋１）</h1>
     </div>
     <div data-role="content" class="unselectable">
-        <div class="mat" style="min-width: 540px; height: 540px; padding: 12px 20px; text-align: center;">
-            <div style="position: relative; top: 200px; left: -50px; display: inline-block; width: 0px;">
-                <div class="card placeholder" style="position:absolute; left: 0px; top: -180px">
-                    <p class="placeholder-text">1</p>
-                </div>
-                <div class="card placeholder" style="position:absolute; left: +156px; top: +90px">
-                    <p class="placeholder-text">2</p>
-                </div>
-                <div class="card placeholder" style="position:absolute; left: -156px; top: +90px">
-                    <p class="placeholder-text">3</p>
-                </div>
-                <div class="card placeholder" style="position:absolute; left: 0px; top: +180px">
-                    <p class="placeholder-text">4</p>
-                </div>
-                <div class="card placeholder" style="position:absolute; left: -156px; top: -90px">
-                    <p class="placeholder-text">5</p>
-                </div>
-                <div class="card placeholder" style="position:absolute; left: +156px; top: -90px">
-                    <p class="placeholder-text">6</p>
-                </div>
-                <div class="card placeholder" style="position:absolute; left: 0px; top: 0px">
-                    <p class="placeholder-text">7</p>
-                </div>
-
-            </div>
+        <div data-bind="template: {name: 'template-spread', data: $data}"></div>
+        <div data-bind="visible: hasDone" style="">
+            <a data-role="button" href="index.html" data-transition="slide" data-direction="reverse">一覧に戻る</a>
         </div>
-        <div style="position: relative; display: block; text-align: center; margin-top: -259.5px; height: 360px;"><!-- margin-top: wanted-value + h/2 -->
-            <div class="revolution-container" >
-                <div class="deck" data-bind="foreach: cards" style="position:absolute; left: -50px; top: -70.5px;"><!-- w/2, h/2 -->
-                    <div data-bind="template: {name: 'template-card', data: $data}" style="position: absolute"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+    </div></div>
 
 </body>
 </html>
