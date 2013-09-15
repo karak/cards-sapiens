@@ -5,7 +5,9 @@
 <script type="text/html" id="template-card">
     <a href="#" data-rel="popup" data-transition="pop" style="color: inherit; text-decoration: none;">
     <div class="card"
-        data-bind="css: {
+        data-bind="
+        visible: !($root.hasDone() && reversed()),
+        css: {
             'reversed': reversed,
             'transitting-position': distributing(), 
             'flipping-before': flipping() == 'before',
@@ -46,11 +48,12 @@
         </div>
     </div>
         
-    <div style="position: relative; display: block; text-align: center; min-height: 70.5px"
+    <div style="position: relative; display: block; text-align: center; min-height: 70.5px; margin-bottom: 40px;"
          data-bind="
             style: {
-                marginTop: (revolutionRadius() + 70.5) + 'px',
-                height: (revolutionRadius() * 2) + 'px',
+                marginTop: revolutionMarginTop() + 'px',
+                top: revolutionContainerTop() + 'px',
+                height: revolutionContainerHeight() + 'px',
                 overflowY: 'visible'
             }"><!-- margin-top: wanted-value + h/2 -->
         <div class="revolution-container" data-bind="css: {animating: revolutionAnimating}">
@@ -60,11 +63,10 @@
         </div>
     </div>
             
-    <div class="requires-jquery-mobile-pageinit" data-bind="visible: hasDone, style: {marginTop: (-190 - revolutionRadius() * 2) + 'px'}">
+    <div data-role="panel" class="requires-jquery-mobile-pageinit" data-bind="visible: hasDone" style="margin-top: -70.5px">
         <button data-bind="{click: restart}">やりなおす</button>
-        <a data-role="button" href="index.html" data-transition="slide">別のスプレッドを選ぶ</a>
+        <a data-role="button" href="index.html" data-transition="slide" data-icon="arrow-r" data-iconpos="right" data-iconshadow="true">別のスプレッドを選ぶ</a>
     </div>
-
 </script>
 
 <script type="text/html" id="template-description-about-cards">

@@ -210,30 +210,43 @@ var MainViewModel = function (deviceViewMode, spread) {
 
     //console.log('Created main model for ' + $root.data('title')); 
 
-    this.spread = spread;
+    this.spread = spread; //need this?
 	this.revolutionRadius = revolutionRadius;
     this.shrinkMat = shrinkMat;
     this.matWidth = ko.computed(function () {
         var cardWidth = 100;
         return !shrinkMat()? config.spread().width : cardWidth;
-    });
+    }, this);
     this.matHeight = ko.computed(function () { return spread.height; });
     this.placeholders = ko.computed(function () {
         return spread.placeholders;
-    });
+    }, this);
     this.revolutionAnimating = ko.computed(function () {
         //don't use r…() && shr...()
         var r = revolutionOn(),
             shr = shrinkMat();
         return r && !shr;
-    });
+    }, this);
+    this.hasDone = ko.observable(false);
+    this.revolutionMarginTop = ko.computed(function () {
+        var m = revolutionRadius() ;
+        return !this.hasDone()? m + 70.5 : 0;
+    }, this);
+    this.revolutionContainerTop = ko.computed(function () {
+        var m = revolutionRadius() ;
+        return !this.hasDone()? 0 : m + 70.5;
+    }, this);
+    this.revolutionContainerHeight = ko.computed(function () {
+        var h = (revolutionRadius() * 2);
+        return !this.hasDone()? h : 0;
+    }, this);
     this.cards = cardViewModels;
     this.revolutionOn = revolutionOn;
-    this.hasDone = ko.observable(false);
 };
 
 MainViewModel.prototype.distribute = function (deltaOffset) {
-    var placeholders = this.placeholders(),
+    var self = this,
+        placeholders = this.placeholders(),
         cards = this.cards(),
         n = placeholders.length;
     
@@ -254,8 +267,19 @@ MainViewModel.prototype.distribute = function (deltaOffset) {
             //use CSS Transition
             card.distributing(true);
             setTimeout(function () {
-                card.top(deltaOffset.top + (placeholder.top || 0));
-                card.left(deltaOffset.left + (placeholder.left || 0));
+                if (!self.shrinkMat()) {
+                    card.top(deltaOffset.top + (placeholder.top || 0));
+                    card.left(deltaOffset.left + (placeholder.left || 0));
+                }
+                else
+                {
+                    /* ATTENTION: sync with css */
+                    var margin = 10,
+                        w = 100,
+                        h = 141;
+                    card.top(i * (margin + h) + deltaOffset.top);
+                    card.left(0 + deltaOffset.left);
+                }
                 setTimeout(function () {
                     card.distributing(false);
                     deferred.resolve(card);
@@ -307,6 +331,9 @@ var relativeOffset = function (from,  to) {
     var dst = $(to).offset(),
         src = $(from).offset(),
         delta = {top: dst.top - src.top, left: dst.left - src.left};
+    //WARN
+    if ($(to).filter(':visible').length === 0)  console.log($(to).get(0), '(to) is invisible');
+    if ($(from).filter(':visible').length === 0)  console.log($(from).get(0), '(from) is invisible');
     return delta;
 };
 
