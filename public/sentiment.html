@@ -14,17 +14,18 @@
 <body>
 <div data-role="page" id="page-spread-fortune" data-title="心情">
     <script type="text/javascript">
-    config.spread({
-        width: 100 * 3 + 20 * 2,
-        height: 141 * 3 + 20 * 2,
-        placeholders: [
-            {left:  0, top: 141 + 20, text: '過去'},
-            {left: 120, top: 141 + 20, text: '現在'},
-            {left: 240, top: 141 + 20, text: '未来'}, 
-            {left: 120, top: 0, text: '意識'},
-            {left: 120, top: (141 + 20) *2, text: '潜在意識'}
-        ]
-    });
+        config({
+            name: 'sentiment',
+            width: 100 * 3 + 20 * 2,
+            height: 141 * 3 + 20 * 2,
+            placeholders: [
+                {left:  0, top: 141 + 20, text: '過去'},
+                {left: 120, top: 141 + 20, text: '現在'},
+                {left: 240, top: 141 + 20, text: '未来'}, 
+                {left: 120, top: 0, text: '意識'},
+                {left: 120, top: (141 + 20) *2, text: '潜在意識'}
+            ]
+        });
     </script>
     <div data-role="header">
         <a href="#" data-rel="back" data-icon="back" data-iconpos="notext" title="Go back">Back</a>

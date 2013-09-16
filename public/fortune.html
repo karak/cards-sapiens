@@ -14,15 +14,16 @@
 <body>
 <div data-role="page" id="page-spread-fortune" data-title="運勢">
     <script type="text/javascript">
-    config.spread({
-        width: 340,
-        height: 141,
-        placeholders: [
-            {left: 0, top: 0, text: '過去'},
-            {left: 120, top: 0, text: '現在'},
-            {left: 240, top: 0, text: '未来'} 
-        ]
-    });
+        config({
+            name: 'fortune',
+            width: 340,
+            height: 141,
+            placeholders: [
+                {left: 0, top: 0, text: '過去'},
+                {left: 120, top: 0, text: '現在'},
+                {left: 240, top: 0, text: '未来'} 
+            ]
+        });
     </script>
     <div data-role="header">
         <a href="#" data-rel="back" data-icon="back" data-iconpos="notext" title="Go back">Back</a>

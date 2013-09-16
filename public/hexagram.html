@@ -16,19 +16,20 @@
 
 <div data-role="page" id="page-spread-one-oracle" data-title="ヘキサグラム">
     <script type="text/javascript">
-    config.spread({
-        width: 156 * 2 + 100,
-        height: 180 * 2 + 141,
-        placeholders: [
-            {left: 0 + 156, top: -180 + 180, text: '1'},
-            {left: 156 + 156, top: 90 + 180, text: '2'},
-            {left: -156 + 156, top: 90 + 180, text: '3'},
-            {left: 0 + 156, top: 180 + 180, text: '4'},
-            {left: -156 + 156, top: -90 + 180, text: '5'},
-            {left: 156 + 156, top: -90 + 180, text: '6'},
-            {left: 0 + 156, top: 0 + 180, text: '7'},
-        ]
-    });
+        config({
+            name: 'hexagram',
+            width: 156 * 2 + 100,
+            height: 180 * 2 + 141,
+            placeholders: [
+                {left: 0 + 156, top: -180 + 180, text: '1'},
+                {left: 156 + 156, top: 90 + 180, text: '2'},
+                {left: -156 + 156, top: 90 + 180, text: '3'},
+                {left: 0 + 156, top: 180 + 180, text: '4'},
+                {left: -156 + 156, top: -90 + 180, text: '5'},
+                {left: 156 + 156, top: -90 + 180, text: '6'},
+                {left: 0 + 156, top: 0 + 180, text: '7'},
+            ]
+        });
     </script>
     <div data-role="header">
         <a href="#" data-rel="back" data-icon="back" data-iconpos="notext" title="Go back">Back</a>

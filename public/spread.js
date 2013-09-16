@@ -1,3 +1,118 @@
+/******** library aux ********/
+if (!Array.prototype.forEach)
+{
+    Array.prototype.forEach = function(f, obj) {
+        var n = this.length, i;
+        obj = obj || this;
+        for (i = 0; i < n; i++)
+        {
+            f.call(obj, this[i], i, this);
+        }
+    };
+}
+
+if (!Array.prototype.indexOf) {
+  Array.prototype.indexOf = function (searchElement /*, fromIndex */ ) {
+    "use strict";
+
+    if (this == null) {
+      throw new TypeError();
+    }
+
+    var t = Object(this);
+    var len = t.length >>> 0;
+
+    if (len === 0) {
+      return -1;
+    }
+
+    var n = 0;
+
+    if (arguments.length > 0) {
+      n = Number(arguments[1]);
+
+      if (n != n) { // shortcut for verifying if it's NaN
+        n = 0;
+      } else if (n != 0 && n != Infinity && n != -Infinity) {
+         n = (n > 0 || -1) * Math.floor(Math.abs(n));
+      }
+    }
+
+    if (n >= len) {
+      return -1;
+    }
+
+    var k = n >= 0 ? n : Math.max(len - Math.abs(n), 0);
+
+    for (; k < len; k++) {
+      if (k in t && t[k] === searchElement) {
+        return k;
+      }
+    }
+    return -1;
+  }
+}
+if (!Array.prototype.every)
+{
+  Array.prototype.every = function(fun /*, thisp */)
+  {
+    "use strict";
+
+    if (this == null)
+      throw new TypeError();
+
+    var t = Object(this);
+    var len = t.length >>> 0;
+    if (typeof fun != "function")
+      throw new TypeError();
+
+    var thisp = arguments[1];
+    for (var i = 0; i < len; i++)
+    {
+      if (i in t && !fun.call(thisp, t[i], i, t))
+        return false;
+    }
+
+    return true;
+  };
+}
+// Production steps of ECMA-262, Edition 5, 15.4.4.19
+// Reference: http://es5.github.com/#x15.4.4.19
+if (!Array.prototype.map) {
+  Array.prototype.map = function(callback, thisArg) {
+
+    var T, A, k;
+
+    if (this == null) {
+      throw new TypeError(" this is null or not defined");
+    }
+
+    var O = Object(this);
+
+    var len = O.length >>> 0;
+
+    if ({}.toString.call(callback) != "[object Function]") {
+      throw new TypeError(callback + " is not a function");
+    }
+    if (thisArg) {
+      T = thisArg;
+    }
+    A = new Array(len);
+    k = 0;
+    while(k < len) {
+
+      var kValue, mappedValue;
+      if (k in O) {
+        kValue = O[ k ];
+        mappedValue = callback.call(T, kValue, k, O);
+        A[ k ] = mappedValue;
+      }
+      k++;
+    }
+    return A;
+  };      
+}
+
 /******** library extension ********/
 Array.prototype.shuffle = function() {
     var i = this.length;
@@ -45,9 +160,179 @@ var supportsCssAnimation = (function () {
 } ()); //TODO: right logic
 
 
-var config = {
-    spread: ko.observable({})
-};
+var config = (function () {
+    var configData = {};
+
+    return function () {
+        //switch by page
+        var currentPageId = $('.ui-page-active').attr('id');
+        if (arguments.length === 0) {
+            //get
+            return configData[currentPageId];
+        }
+        else
+        {
+            //set
+            return configData[currentPageId] = arguments[0];
+        }
+    }
+} ());
+
+/**************** storage ******************/
+var appDb = (function () {
+
+var spreadNames = ["one-oracle", "fortune", "near-future", "project", "sentiment",
+                   "destined-mate", "hexagram", "celtic-cross"];
+
+var cardNames = [
+    //major
+    "the-fool",
+    "the-magician", "the-high-priestess", "the-empress", "the-emperor", "the-hierophant",
+    "the-lovers", "the-chariot", "strength", "the-hermit", "the-wheel-of-fortune",
+    "justice", "the-hanged-man", "death", "temperance", "the-devil",
+    "the-tower", "the-star", "the-moon", "the-sun", "judgement",
+    "the-world"
+];
+
+var appDb = (new function () {
+    var db = openDatabase("spread", "1.0", "spread application", 4096);
+    
+
+    function execute(tx, statement) {
+        var params = Array.prototype.slice.apply(arguments, [2]),
+            deferred = $.Deferred();
+        tx.executeSql(statement, params, function (tx, resultSet) {
+            deferred.resolve(resultSet);
+        },
+        function (tx, err) {
+            console.log("SQL execution error: \"" + statement + "\"", err);
+            deferred.reject(tx, err);
+        });
+        return deferred.promise();
+    }
+
+    /* initialize */
+    db.transaction(
+        function (tx) {
+            execute(tx, "CREATE TABLE IF NOT EXISTS system(version INTEGER)");
+            execute(tx, "CREATE UNIQUE INDEX IF NOT EXISTS system_version ON system(version)");
+            execute(tx, "INSERT OR IGNORE INTO system (version) VALUES(1)"); //version 1
+            
+            execute(tx, "CREATE TABLE IF NOT EXISTS spreads(id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(256))");
+            execute(tx, "CREATE UNIQUE INDEX IF NOT EXISTS spreads_name ON spreads(name)");
+            execute(tx, "SELECT COUNT (*) AS count FROM spreads").
+            then(function (rs) {
+                var row = rs.rows.item(0);
+                if (row.count === 0)
+                {
+                    spreadNames.forEach (function (name) {
+                        execute(tx, "INSERT INTO spreads (name) VALUES(?)", name);
+                    });
+                }
+            });
+
+            execute(tx, "CREATE TABLE IF NOT EXISTS cards(id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(256))");
+            execute(tx, "CREATE UNIQUE INDEX IF NOT EXISTS cards_name ON cards(name)");
+            execute(tx, "SELECT COUNT (*) AS count FROM cards").
+            then(function (rs) {
+                var row = rs.rows.item(0);
+                if (row.count === 0)
+                {
+                    cardNames.forEach (function (name) {
+                        execute(tx, "INSERT INTO cards (name) VALUES(?)", name);
+                    });
+                }
+            });
+
+            execute(tx, "CREATE TABLE IF NOT EXISTS activities(id INTEGER PRIMARY KEY AUTOINCREMENT, spread_id INTEGER NOT NULL, note VARCHAR(4096) NOT NULL DEFAULT '', timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)");
+            execute(tx, "CREATE INDEX IF NOT EXISTS activities_spread_id ON activities(spread_id)");
+            execute(tx, "CREATE TABLE IF NOT EXISTS activity_card(activity_id INTEGER NOT NULL, position INTEGER NOT NULL, card_id INTEGER)");
+            execute(tx, "CREATE INDEX IF NOT EXISTS activity_card_activity_id_position ON activity_card(activity_id, position)");
+        },
+        function (err) {
+            //TODO: fix
+            console.log('fail to initialize db', err);
+        },
+        function () {
+        }
+    );
+    
+    function transaction (callback) {
+        var self = this;
+        var deferred = $.Deferred();
+        var subPromise;
+
+        db.transaction(
+            function (tx) {
+                var mayPromise = callback.apply(db, arguments);
+                if (mayPromise) {
+                    subPromise = mayPromise;
+                    mayPromise.done(function () { deferred.resolve.apply(self, arguments); }).
+                               fail(function () { deferred.reject.apply(self, arguments); });
+                }
+            },
+            function (err) {
+                if (!subPromise)
+                {
+                    deferred.reject.apply(self, arguments);
+                }
+            },
+            function () {
+                if (!subPromise)
+                {
+                    deferred.resolve.apply(self, arguments);
+                }
+            }
+        );
+        return deferred.promise();
+    }
+
+    // Activity model
+
+    /**
+     * Save new activity.
+     *
+     * @param {String} spreadName
+     * @param {Array} cardNameArray
+     * @param {String} note
+     */
+    this.saveNewActivity = function (spreadName, cardNameArray, note) {
+        return transaction(function (tx) {
+            execute(tx, "INSERT INTO activities (spread_id, note) VALUES ((SELECT id FROM spreads WHERE name = ? LIMIT 1), ?)", spreadName, note).then(function (rs) {
+                var activityId = rs.insertId;
+                cardNameArray.forEach(function (cardName, index) {
+                    execute(tx, "INSERT INTO activity_card (activity_id, position, card_id) VALUES (?, ?, (SELECT id FROM cards WHERE name = ? LIMIT 1))", activityId, index + 0, cardName);
+                });
+            });
+        });
+    };
+
+    this.countOfActivities = function () {
+        return transaction(function (tx) {
+            //return count by names of spread.
+            var deferred = $.Deferred();
+            var counts = {};
+
+            execute(tx, "SELECT spreads.name spreadName, (SELECT COUNT(*) FROM activities WHERE activities.spread_id = spreads.id) count FROM spreads").
+                done(function (rs) {
+                    for (var i = 0; i < rs.rows.length; i++) {
+                        var row = rs.rows.item(i);
+                        counts[row.spreadName] = row.count;
+                    }
+                    deferred.resolve(counts);
+                }).
+                fail(function (err) {
+                    deferred.reject(err);
+                });
+
+            return deferred.promise();
+        });
+    };
+} ()); //appDb
+
+return appDb;
+
+} ());
 
 (function ($, ko) {
 
@@ -187,7 +472,7 @@ CardViewModel.prototype.flipFromReversed = function () {
 
 
 
-var MainViewModel = function (deviceViewMode, spread) {   
+var MainViewModel = function (deviceViewMode, config) {   
     var cardViewModels = ko.observableArray(
         ko.utils.arrayMap(cardData, function (x) {
             return new CardViewModel(x);
@@ -195,7 +480,7 @@ var MainViewModel = function (deviceViewMode, spread) {
     );
     
     var shrinkMat = ko.computed(function () {
-        return deviceViewModel.width() < spread.width;
+        return deviceViewModel.width() < config.width;
     });
     
     var revolutionRadius = ko.computed(function () {
@@ -211,16 +496,15 @@ var MainViewModel = function (deviceViewMode, spread) {
 
     //console.log('Created main model for ' + $root.data('title')); 
 
-    this.spread = spread; //need this?
 	this.revolutionRadius = revolutionRadius;
     this.shrinkMat = shrinkMat;
     this.matWidth = ko.computed(function () {
         var cardWidth = 100;
-        return !shrinkMat()? config.spread().width : cardWidth;
+        return !shrinkMat()? config.width : cardWidth;
     }, this);
-    this.matHeight = ko.computed(function () { return spread.height; });
+    this.matHeight = ko.computed(function () { return config.height; });
     this.placeholders = ko.computed(function () {
-        return spread.placeholders;
+        return config.placeholders;
     }, this);
     this.revolutionAnimating = ko.computed(function () {
         //don't use r…() && shr...()
@@ -243,6 +527,9 @@ var MainViewModel = function (deviceViewMode, spread) {
     }, this);
     this.cards = cardViewModels;
     this.revolutionOn = revolutionOn;
+
+    //sub app
+    this.activity = new ActivityLogViewModel(config.name);
 };
 
 VStackUtil = function () {};
@@ -260,7 +547,9 @@ MainViewModel.prototype.distribute = function (deltaOffset) {
     
     //TODO: bugfix for shrinkMat mode!!!
     //TODO: support rotateZ() in order to realize celtic-cross.
-    var reqDistributes = new Array(n);                
+    var reqDistributes = new Array(n);
+    var tmpDistributedCards = new Array(n);
+
     $.each(placeholders, function (i, placeholder) {
         //console.log('STEP1-' + i);
         var delay = 120,
@@ -319,9 +608,14 @@ MainViewModel.prototype.distribute = function (deltaOffset) {
             }
         }
         reqDistributes[i] = deferred.promise();
+
+        tmpDistributedCards[i] = card;
         //console.log("    => " + card.nameJa);
     });
     
+    // update activity viewmodel
+    self.activity.cards(tmpDistributedCards);
+
     return reqDistributes;
 };
 
@@ -349,9 +643,47 @@ MainViewModel.prototype.restart = function () {
     //revolution.start();
     
     this.hasDone(false);
+
+    //reset sub app as well
+    this.activity.restart();
+    this.statistics.restart();
 };
 
+function toHyphenForm (x) {
+    return x.toLowerCase().replace(' ', '-');
+}
 
+ActivityLogViewModel = function (spreadName) {
+    var self = this;
+
+    //properties
+    self.onceSaved = ko.observable(false);
+
+    self.note = ko.observable('');
+    self.cards = ko.observableArray();
+
+    // write functions
+
+    self.save = function () {
+        var reqSave = appDb.saveNewActivity(
+            toHyphenForm(spreadName),
+            self.cards().map(function (card) { return toHyphenForm(ko.utils.unwrapObservable(card.nameEn)); }),
+            self.note()
+        );
+
+        $.when(reqSave).then(function () {
+            self.note('');
+            self.onceSaved(true);
+        });
+    };
+    
+    self.restart = function () {
+        //NOTE: inherit spreadName
+        self.note('');
+        self.cards([]);
+        self.onceSaved(false);
+    };
+};
 
 var relativeOffset = function (from,  to) {
     var dst = $(to).offset(),
@@ -381,9 +713,10 @@ var deviceViewModel  = (new function () {
     this.width = width;
 } ());
 
+
 /**** pageinit ****/
-$(document).on('pageinit', function (e) {
-    var mainViewModel = new MainViewModel(deviceViewModel, config.spread());
+var spreadPageInit = function (e, config) {    
+    var mainViewModel = new MainViewModel(deviceViewModel, config);
 
     $.when(reqTemplateLoad).then(function () {
         var $root = $(e.target);
@@ -392,14 +725,7 @@ $(document).on('pageinit', function (e) {
         ko.applyBindings(mainViewModel, e.target);
         
         $root.find('.requires-jquery-mobile-pageinit').
-            find('button, a[data-role="button"]').
-            button().
-            end().
-            find('*[data-role="popup"]').
-            init().popup().
-            end().
-            find('a[href]').
-            init();
+              trigger('create');
         
     //wait updating DOM especially on 2nd pageinit.
     //setTimeout(function () {
@@ -571,6 +897,39 @@ $(document).on('pageinit', function (e) {
     //}); //setTimeout
     }); //when-then
     
+};
+
+var indexPageInit = function (e, config)
+{
+    //TODO: Viewmodels for an index page
+
+    var data = ko.observable({});
+
+    appDb.countOfActivities().then(function (counts) {
+        data(counts);
+    });
+
+    ko.applyBindings({
+        spreads: data
+    });
+};
+
+$(document).on('pageinit', function (e) {
+    //config should be defined in page html!
+    var currentPageConfig = config();
+
+    if (currentPageConfig !== undefined)
+    {
+        //spread page
+        spreadPageInit(e, currentPageConfig);
+    }
+    else
+    {
+        //init or dictionary
+        indexPageInit(e, currentPageConfig);
+    }
+
 }); //pageinit
+
 
 } (jQuery, ko));

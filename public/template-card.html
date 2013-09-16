@@ -1,4 +1,4 @@
-<html manifest="app.manifest">
+<html>
 <head></head>
 <body>
 
@@ -67,6 +67,15 @@
     <div data-role="panel" class="requires-jquery-mobile-pageinit" data-bind="visible: hasDone" style="margin-top: -70.5px">
         <button data-bind="{click: restart}" data-theme="c">やりなおす</button>
         <a data-role="button" href="index.html" data-transition="slide" data-icon="arrow-r" data-iconpos="right" data-iconshadow="true">別のスプレッドを選ぶ</a>
+        <div data-bind="with: activity">
+            <form data-bind="visible:!onceSaved(), submit: save" action="javascript:">
+                <label for="spread-activity-reading">解釈を記入する</label>
+                <!-- replace save by implicit save on restart/leave -->
+                <textarea id="spread-activity-reading" data-bind="value: note" rows="3"></textarea>
+                <button type="submit" data-mini="true" data-theme="b">記録する</button>
+                <p style="text-align: center"><small>あなたの端末上にのみ保存されます。外部には送信されません。</small></p>
+            </form>
+        </div>
     </div>
     
     <div data-bind="template: {name: 'template-description-about-cards', data: {}}" class="requires-jquery-mobile-pageinit"></div>
