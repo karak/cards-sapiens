@@ -194,100 +194,113 @@ var cardNames = [
     "the-world"
 ];
 
+var alwaysFail = function () {
+    var deferred = $.Deferred();
+    deferred.reject('This funcion always fail');
+    return deferred.promise();
+};
+
 var appDb = (new function () {
-    var db = openDatabase("spread", "1.0", "spread application", 4096);
+    var supportsWebSql = 'openDatabase' in window;
+    var db = supportsWebSql? openDatabase("spread", "1.0", "spread application", 4096) : {};
     
-
-    function execute(tx, statement) {
-        var params = Array.prototype.slice.apply(arguments, [2]),
-            deferred = $.Deferred();
-        tx.executeSql(statement, params, function (tx, resultSet) {
-            deferred.resolve(resultSet);
-        },
-        function (tx, err) {
-            console.log("SQL execution error: \"" + statement + "\"", err);
-            deferred.reject(tx, err);
-        });
-        return deferred.promise();
-    }
-
-    /* initialize */
-    db.transaction(
-        function (tx) {
-            execute(tx, "CREATE TABLE IF NOT EXISTS system(version INTEGER)");
-            execute(tx, "CREATE UNIQUE INDEX IF NOT EXISTS system_version ON system(version)");
-            execute(tx, "INSERT OR IGNORE INTO system (version) VALUES(1)"); //version 1
-            
-            execute(tx, "CREATE TABLE IF NOT EXISTS spreads(id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(256))");
-            execute(tx, "CREATE UNIQUE INDEX IF NOT EXISTS spreads_name ON spreads(name)");
-            execute(tx, "SELECT COUNT (*) AS count FROM spreads").
-            then(function (rs) {
-                var row = rs.rows.item(0);
-                if (row.count === 0)
-                {
-                    spreadNames.forEach (function (name) {
-                        execute(tx, "INSERT INTO spreads (name) VALUES(?)", name);
-                    });
-                }
-            });
-
-            execute(tx, "CREATE TABLE IF NOT EXISTS cards(id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(256))");
-            execute(tx, "CREATE UNIQUE INDEX IF NOT EXISTS cards_name ON cards(name)");
-            execute(tx, "SELECT COUNT (*) AS count FROM cards").
-            then(function (rs) {
-                var row = rs.rows.item(0);
-                if (row.count === 0)
-                {
-                    cardNames.forEach (function (name) {
-                        execute(tx, "INSERT INTO cards (name) VALUES(?)", name);
-                    });
-                }
-            });
-
-            execute(tx, "CREATE TABLE IF NOT EXISTS activities(id INTEGER PRIMARY KEY AUTOINCREMENT, spread_id INTEGER NOT NULL, note VARCHAR(4096) NOT NULL DEFAULT '', timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)");
-            execute(tx, "CREATE INDEX IF NOT EXISTS activities_spread_id ON activities(spread_id)");
-            execute(tx, "CREATE TABLE IF NOT EXISTS activity_card(activity_id INTEGER NOT NULL, position INTEGER NOT NULL, card_id INTEGER)");
-            execute(tx, "CREATE INDEX IF NOT EXISTS activity_card_activity_id_position ON activity_card(activity_id, position)");
-        },
-        function (err) {
-            //TODO: fix
-            console.log('fail to initialize db', err);
-        },
-        function () {
-        }
-    );
+    var execute = alwaysFail;
+    var transaction = alwaysFail;
+    if (supportsWebSql) {
+        transaction = function (callback) {
+            var self = this;
+            var deferred = $.Deferred();
+            var subPromise;
     
-    function transaction (callback) {
-        var self = this;
-        var deferred = $.Deferred();
-        var subPromise;
+            db.transaction(
+                function (tx) {
+                    var mayPromise = callback.apply(db, arguments);
+                    if (mayPromise) {
+                        subPromise = mayPromise;
+                        mayPromise.done(function () { deferred.resolve.apply(self, arguments); }).
+                                   fail(function () { deferred.reject.apply(self, arguments); });
+                    }
+                },
+                function (err) {
+                    if (!subPromise)
+                    {
+                        deferred.reject.apply(self, arguments);
+                    }
+                },
+                function () {
+                    if (!subPromise)
+                    {
+                        deferred.resolve.apply(self, arguments);
+                    }
+                }
+            );
+            return deferred.promise();
+        };
 
+        execute = function (tx, statement) {
+            var params = Array.prototype.slice.apply(arguments, [2]),
+                deferred = $.Deferred();
+            tx.executeSql(statement, params, function (tx, resultSet) {
+                deferred.resolve(resultSet);
+            },
+            function (tx, err) {
+                console.log("SQL execution error: \"" + statement + "\"", err);
+                deferred.reject(tx, err);
+            });
+            return deferred.promise();
+        };
+        
+        /* initialize */
         db.transaction(
             function (tx) {
-                var mayPromise = callback.apply(db, arguments);
-                if (mayPromise) {
-                    subPromise = mayPromise;
-                    mayPromise.done(function () { deferred.resolve.apply(self, arguments); }).
-                               fail(function () { deferred.reject.apply(self, arguments); });
-                }
+                execute(tx, "CREATE TABLE IF NOT EXISTS system(version INTEGER)");
+                execute(tx, "CREATE UNIQUE INDEX IF NOT EXISTS system_version ON system(version)");
+                execute(tx, "INSERT OR IGNORE INTO system (version) VALUES(1)"); //version 1
+                
+                execute(tx, "CREATE TABLE IF NOT EXISTS spreads(id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(256))");
+                execute(tx, "CREATE UNIQUE INDEX IF NOT EXISTS spreads_name ON spreads(name)");
+                execute(tx, "SELECT COUNT (*) AS count FROM spreads").
+                then(function (rs) {
+                    var row = rs.rows.item(0);
+                    if (row.count === 0)
+                    {
+                        spreadNames.forEach (function (name) {
+                            execute(tx, "INSERT INTO spreads (name) VALUES(?)", name);
+                        });
+                    }
+                });
+    
+                execute(tx, "CREATE TABLE IF NOT EXISTS cards(id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(256))");
+                execute(tx, "CREATE UNIQUE INDEX IF NOT EXISTS cards_name ON cards(name)");
+                execute(tx, "SELECT COUNT (*) AS count FROM cards").
+                then(function (rs) {
+                    var row = rs.rows.item(0);
+                    if (row.count === 0)
+                    {
+                        cardNames.forEach (function (name) {
+                            execute(tx, "INSERT INTO cards (name) VALUES(?)", name);
+                        });
+                    }
+                });
+    
+                execute(tx, "CREATE TABLE IF NOT EXISTS activities(id INTEGER PRIMARY KEY AUTOINCREMENT, spread_id INTEGER NOT NULL, note VARCHAR(4096) NOT NULL DEFAULT '', timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)");
+                execute(tx, "CREATE INDEX IF NOT EXISTS activities_spread_id ON activities(spread_id)");
+                execute(tx, "CREATE TABLE IF NOT EXISTS activity_card(activity_id INTEGER NOT NULL, position INTEGER NOT NULL, card_id INTEGER)");
+                execute(tx, "CREATE INDEX IF NOT EXISTS activity_card_activity_id_position ON activity_card(activity_id, position)");
             },
             function (err) {
-                if (!subPromise)
-                {
-                    deferred.reject.apply(self, arguments);
-                }
+                //TODO: fix
+                console.log('fail to initialize db', err);
             },
             function () {
-                if (!subPromise)
-                {
-                    deferred.resolve.apply(self, arguments);
-                }
             }
         );
-        return deferred.promise();
     }
-
+    
+    
     // Activity model
+
+    this.enabled = supportsWebSql;
 
     /**
      * Save new activity.
@@ -646,7 +659,7 @@ MainViewModel.prototype.restart = function () {
 
     //reset sub app as well
     this.activity.restart();
-    this.statistics.restart();
+    this.supportsActivityLog = appDb.enabled;
 };
 
 function toHyphenForm (x) {
@@ -910,7 +923,8 @@ var indexPageInit = function (e, config)
     });
 
     ko.applyBindings({
-        spreads: data
+        spreads: data,
+        supportsActivityLog: appDb.enabled
     });
 };
 

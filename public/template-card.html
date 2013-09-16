@@ -67,7 +67,7 @@
     <div data-role="panel" class="requires-jquery-mobile-pageinit" data-bind="visible: hasDone" style="margin-top: -70.5px">
         <button data-bind="{click: restart}" data-theme="c">やりなおす</button>
         <a data-role="button" href="index.html" data-transition="slide" data-icon="arrow-r" data-iconpos="right" data-iconshadow="true">別のスプレッドを選ぶ</a>
-        <div data-bind="with: activity">
+        <div data-bind="with: activity, visible: $root.supportsActivityLog">
             <form data-bind="visible:!onceSaved(), submit: save" action="javascript:">
                 <label for="spread-activity-reading">解釈を記入する</label>
                 <!-- replace save by implicit save on restart/leave -->
