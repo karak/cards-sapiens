@@ -3,7 +3,6 @@
 <body>
 
 <script type="text/html" id="template-card">
-    <a data-rel="popup" data-transition="pop" style="color: inherit; text-decoration: none;" data-bind="attr: {href: '#' + descId}">
     <div class="card"
         data-bind="
         visible: !($root.hasDone() && reversed()),
@@ -18,18 +17,20 @@
             'left': left() + 'px',
             'top': top() + 'px'
         }">
-        <div class="surface">
-            <div class="main-container" style="">
-                <span data-bind="text: nameJa" style="font-weight: bolder; font-family: serif;
-                         font-size: 28px; "></span>
+        <a data-rel="popup" data-transition="pop" style="color: inherit; text-decoration: none;" data-bind="attr: {href: '#' + descId}">
+            <div class="surface">
+                <div class="main-container" style="">
+                    <span data-bind="text: nameJa" style="font-weight: bolder; font-family: serif;
+                             font-size: 28px; "></span>
+                </div>
+                <div class="sub-container">
+                    <!--<span data-bind="text: number" style="position: absolute; left: 8px; "></span>-->
+                    <span data-bind="text: nameEn"></span>
+                </div>
             </div>
-            <div class="sub-container">
-                <!--<span data-bind="text: number" style="position: absolute; left: 8px; "></span>-->
-                <span data-bind="text: nameEn"></span>
-            </div>
-        </div>
+        </a>
         <div class="backface"></div>
-    </div></a>
+    </div>
 </script>
 
 <script type="text/html" id="template-spread">
@@ -74,7 +75,6 @@
 <script type="text/html" id="template-description-about-cards">
     <div data-role="popup" id="tooltip-desc-the-fool" class="ui-content" data-theme="c">
         <p>冒険、無軌道</p>
-        <p data-wikipedia="embedded"><a href="http://ja.wikipedia.org/wiki/%E6%84%9A%E8%80%85" style="font-size: 75%">Wikipedia</a></p>
     </div>
     <div data-role="popup" id="tooltip-desc-the-magician" class="ui-content" data-theme="c">
         <p>始まり、技術、好奇心</p>
