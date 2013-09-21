@@ -413,7 +413,7 @@ var cardData =  [{
 }, {
     nameEn: "The Devil",
     nameJa: "悪魔",
-    descId: 'tooltip-desc-devil'
+    descId: 'tooltip-desc-the-devil'
 }, {
     nameEn: "The Tower",
     nameJa: "塔",
@@ -421,11 +421,11 @@ var cardData =  [{
 }, {
     nameEn: "The Star",
     nameJa: "星",
-    descId: 'tooltip-desc-the-start'
+    descId: 'tooltip-desc-the-star'
 }, {
     nameEn: "The Moon",
     nameJa: "月",
-    descId: 'tooltip-desc-moon'
+    descId: 'tooltip-desc-the-moon'
 }, {
     nameEn: "The Sun",
     nameJa: "太陽",
