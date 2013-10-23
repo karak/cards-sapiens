@@ -542,6 +542,7 @@ var MainViewModel = function (deviceViewMode, config) {
     this.revolutionOn = revolutionOn;
 
     //sub app
+    this.supportsActivityLog = appDb.enabled;
     this.activity = new ActivityLogViewModel(config.name);
 };
 
@@ -659,7 +660,6 @@ MainViewModel.prototype.restart = function () {
 
     //reset sub app as well
     this.activity.restart();
-    this.supportsActivityLog = appDb.enabled;
 };
 
 function toHyphenForm (x) {
